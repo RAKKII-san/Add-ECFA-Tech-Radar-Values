@@ -7,7 +7,7 @@ public class AddEcfaRadar {
         //System.out.println(option);
         switch (option) {
             case 'a':
-                getFile();
+                chooseFile();
             case 'b':
                 chooseDifficulty();
             case 'c':
@@ -56,7 +56,7 @@ public class AddEcfaRadar {
         }
     }
 
-    private static void getFile() {
+    private static void chooseFile() {
 
     }
 
