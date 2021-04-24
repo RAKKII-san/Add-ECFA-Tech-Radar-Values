@@ -23,9 +23,9 @@ public class AddEcfaRadar {
         Scanner kb = new Scanner(System.in);
         char option;
 
+        System.out.println("Welcome to the ECFA Tech Radar " +
+                           "Injection Tool!\n");
         do {
-            System.out.println("Welcome to the ECFA Tech Radar " +
-                               "Injection Tool!\n");
             System.out.println("Enter the letter of your chosen" +
                                "operation");
             System.out.println("\ta) Insert ECFA tech values");
@@ -56,8 +56,8 @@ public class AddEcfaRadar {
         }
     }
 
-    private static void chooseFile() {
-
+    public static void chooseFile() {
+        System.out.println("Enter the filename ");
     }
 
     private static void chooseDifficulty() {
