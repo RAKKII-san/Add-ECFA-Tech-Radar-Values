@@ -10,16 +10,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /** 
- * 
+ * TODO write all the comments for each method you lazy fuck
  */
 public class AddEcfaRadar {
+    static Scanner kb = new Scanner(System.in);
     /** Gets a .ssc file to be read 
      *  if no arguments were given in the command line.
      * @return The file given by the user.
      * @throws IOException
      */
     public static File getFile() throws IOException {
-        Scanner kb = new Scanner(System.in);
         String filename;
         File sscFile;
         Pattern sscPtrn = Pattern.compile("\\.ssc$");
@@ -45,8 +45,6 @@ public class AddEcfaRadar {
                                    "enter an existing .ssc file.");
             }
         } while (!fileFound);
-        
-        kb.close();
         return sscFile;
     }
 
@@ -62,17 +60,19 @@ public class AddEcfaRadar {
                 new BufferedReader(new FileReader(input));
             int lineNum = 0;
             boolean isChart = false;
-            Pattern chartStartPtrn = Pattern.compile("^#NOTEDATA:");
-            Pattern chartEndPtrn = Pattern.compile("^#NOTES:");
-            Pattern chartMtrPtrn = Pattern.compile("^#METER:");
-            Pattern chartDiffPtrn = Pattern.compile("^#DIFFICULTY:");
-            Pattern chartStylePtrn = Pattern.compile("^#CHARTSTYLE:");
+            String currLine;
+
+            Pattern chartStartPtrn = Pattern.compile("#NOTEDATA:");
+            Pattern chartEndPtrn = Pattern.compile("#NOTES:");
+            Pattern chartMtrPtrn = Pattern.compile("#METER:");
+            Pattern chartDiffPtrn = Pattern.compile("#DIFFICULTY:");
+            Pattern chartStylePtrn = Pattern.compile("#CHARTSTYLE:");
+
             Chart tempChart = new Chart();
-            while (chartReader.readLine() != null) {
-                String currLine = chartReader.readLine();
+            while ((currLine = chartReader.readLine()) != null) {
+                
                 Matcher chartStart = chartStartPtrn.matcher(currLine);
                 Matcher chartEnd = chartEndPtrn.matcher(currLine);
-                lineNum++;
                 if (chartStart.find()) {
                     isChart = true;
                 }
@@ -83,7 +83,7 @@ public class AddEcfaRadar {
                     Matcher chartStyle = chartStylePtrn.matcher(currLine);
                     
                     if (chartMeter.find()) {
-                        int meter = Integer.parseInt(currLine);
+                        int meter = Integer.valueOf(currLine.replaceAll("[^0-9]", ""));
                         if (meter < 7) {
                             tempChart = new Chart();
                             isChart = false;
@@ -108,25 +108,26 @@ public class AddEcfaRadar {
                         Matcher techValMatch = techValPtrn.matcher(currLine);
                         if (techValMatch.find()) {
                             String[] fields = currLine.split("[=,;]");
-                            tempChart.setSpeed(Integer.parseInt(fields[1]));
-                            tempChart.setStamina(Integer.parseInt(fields[3]));
-                            tempChart.setTechnique(Integer.parseInt(fields[5]));
-                            tempChart.setMovement(Integer.parseInt(fields[7]));
-                            tempChart.setRhythms(Integer.parseInt(fields[9]));
+                            tempChart.setSpeed(Integer.valueOf(fields[1]));
+                            tempChart.setStamina(Integer.valueOf(fields[3]));
+                            tempChart.setTechnique(Integer.valueOf(fields[5]));
+                            tempChart.setMovement(Integer.valueOf(fields[7]));
+                            tempChart.setRhythms(Integer.valueOf(fields[9]));
                             tempChart.setGimmicks(fields[11]);
                         }
                     }
-                }
-                if (chartEnd.find()) {
-                    if (isChart) {
-                        chartList.add(tempChart);
+                    if (chartEnd.find()) {
+                        if (isChart) {
+                            chartList.add(tempChart);
+                        }
+                        if (tempChart.getPosition() == 0) {
+                            tempChart.setPosition(lineNum - 4);
+                        }
+                        tempChart = new Chart();
+                        isChart = false;
                     }
-                    if (tempChart.getPosition() == 0) {
-                        tempChart.setPosition(lineNum - 4);
-                    }
-                    tempChart = new Chart();
-                    isChart = false;
                 }
+                lineNum++;
             }
             chartReader.close();
         } catch (FileNotFoundException e) {
@@ -145,8 +146,8 @@ public class AddEcfaRadar {
      * @param chartList
      */
     public static int listChart(ArrayList<Chart> chartList) {
-        int choice = -1;
-        Scanner kb = new Scanner(System.in);
+        int choice;
+        
         if (chartList.size() == 0) {
             System.out.println("There is no chart with a level " +
                                "higher than 7 in this file. " +
@@ -168,22 +169,21 @@ public class AddEcfaRadar {
             System.out.println(chartLine);
         }
         System.out.println();
-        while (choice < 0 || choice > chartList.size()) {
+        do {
             System.out.print("Choose a chart to modify tech values " +
                              "or choose 0 to save and exit.");
             choice = kb.nextInt();
-            if (choice < 0 || choice > chartList.size()) {
+            if (choice < -1 || choice > chartList.size()) {
                 System.out.println("Invalid choice. Please choose again.");
             }
-        }
-        kb.close();
-        return choice;
+        } while (choice < -1 || choice > chartList.size());
+        return choice - 1;
     }
 
     /**
+     * 
      * @param chartChoice
      * @param chartList 
-     * 
      */
     public static ArrayList<Chart> enterValues(ArrayList<Chart> chartList, 
                                                int chartChoice) {
@@ -213,16 +213,14 @@ public class AddEcfaRadar {
      * @return
      */
     public static int getValue(String prompt) {
-        Scanner kb = new Scanner(System.in);
-        int choice = 0;
-        while (choice < 1 || choice > 10) {
+        int choice;
+        do {
             System.out.print("Enter a number from 1-10 for " + prompt + ": ");
             choice = kb.nextInt();
             if (choice < 1 || choice > 10) {
                 System.out.println("Invalid input.");
             }
-        }
-        kb.close();
+        } while (choice < 1 || choice > 10);
         return choice;
     }
 
@@ -231,9 +229,8 @@ public class AddEcfaRadar {
      * @return
      */
     public static String getGimmicks() {
-        Scanner kb = new Scanner(System.in);
-        int choice = -1;
-        while (choice < 0 || choice > 4) {
+        int choice;
+        do {
             System.out.println("Enter a number corresponding to the " +
                              "intensity of gimmicks,");
             System.out.println("0=none, 1=light, 2=medium, 3=heavy, 4=cmod ok");
@@ -241,8 +238,7 @@ public class AddEcfaRadar {
             if (choice < 0 || choice > 4) {
                 System.out.println("Invalid input.");
             }
-        }
-        kb.close();
+        } while (choice < 0 || choice > 4) ;
 
         switch (choice) {
             case 0:
@@ -264,13 +260,33 @@ public class AddEcfaRadar {
      * 
      * @param myFile
      * @param chartList
+     * @throws IOException
      */
-    public static File writeToFile(File myFile, ArrayList<Chart> chartList) {
-        File newFile = new File(myFile.getName());
-        /*
-            
-        */
-        return newFile;
+    public static void writeToFile(File myFile, ArrayList<Chart> chartList) 
+                  throws IOException {
+        String content = "";
+        BufferedReader read = new BufferedReader(new FileReader(myFile));
+        int process = 0;
+        int styleLine = chartList.get(0).getPosition();
+        int lineCount = 0;
+        String nextLine;
+        while ((nextLine = read.readLine()) != null) {
+            if (lineCount == styleLine) {
+                content += "#CHARTSTYLE:" + chartList.get(process).toString() + ";\n";
+                process++;
+                if (process < chartList.size()) {
+                    styleLine = chartList.get(process).getPosition();
+                }
+                
+            } else {
+                content += nextLine + '\n';
+            }
+            lineCount++;
+        }
+        read.close();
+        FileWriter newFile = new FileWriter(myFile.getName());
+        newFile.write(content);
+        newFile.close();
     }
 
     public static void main(String[] args) throws IOException {
@@ -293,12 +309,14 @@ public class AddEcfaRadar {
             myFile = getFile();
         }
         ArrayList<Chart> chartList = getCharts(myFile);
-        int chartChoice = 1;
-        while (chartChoice > 0) {
+        int chartChoice;
+        do {
             chartChoice = listChart(chartList);
-            chartList = enterValues(chartList,chartChoice);
-        }
-        
+            if (chartChoice > -1) {
+                chartList = enterValues(chartList,chartChoice);
+                writeToFile(myFile, chartList);
+            }
+        } while (chartChoice > -1); 
     }
 }
 
