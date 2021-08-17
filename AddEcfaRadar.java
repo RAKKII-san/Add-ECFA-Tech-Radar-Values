@@ -9,13 +9,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-/** 
- * TODO write all the comments for each method you lazy fuck
- */
 public class AddEcfaRadar {
     static Scanner kb = new Scanner(System.in);
-    /** Gets a .ssc file to be read 
-     *  if no arguments were given in the command line.
+
+    /** 
+     * Gets a .ssc file to be read 
+     * if no arguments were given in the command line.
      * @return The file given by the user.
      * @throws IOException
      */
@@ -48,7 +47,8 @@ public class AddEcfaRadar {
         return sscFile;
     }
 
-    /** Processes a .ssc file and returns a list of charts with a meter
+    /** 
+     * Processes a .ssc file and returns a list of charts with a meter
      * higher than 7.
      * @param input The input file.
      * @return The list of charts.
@@ -121,7 +121,7 @@ public class AddEcfaRadar {
                             chartList.add(tempChart);
                         }
                         if (tempChart.getPosition() == 0) {
-                            tempChart.setPosition(lineNum - 4);
+                            tempChart.setPosition(lineNum - 1);
                         }
                         tempChart = new Chart();
                         isChart = false;
@@ -139,10 +139,11 @@ public class AddEcfaRadar {
         return chartList;
     }
 
-    /** Checks to see if there are any ECFA leveled charts (7+) available.
-     *  If not, exit the program
-     *  If yes, let the user choose what chart to modify
-     *  or type 0 to write to the file and exit the program.
+    /** 
+     * Checks to see if there are any ECFA leveled charts (7+) available.
+     * If not, exit the program
+     * If yes, let the user choose what chart to modify
+     * or type 0 to write to the file and exit the program.
      * @param chartList
      */
     public static int listChart(ArrayList<Chart> chartList) {
@@ -181,9 +182,9 @@ public class AddEcfaRadar {
     }
 
     /**
-     * 
-     * @param chartChoice
-     * @param chartList 
+     * Stores the prompts and values given by the user.
+     * @param chartChoice The chart being modified.
+     * @param chartList The list of charts given by the .ssc file.
      */
     public static ArrayList<Chart> enterValues(ArrayList<Chart> chartList, 
                                                int chartChoice) {
@@ -207,10 +208,10 @@ public class AddEcfaRadar {
         return chartList;
     }
 
-    /**
-     * 
-     * @param prompt
-     * @return
+    /** 
+     * Prompts the user to input a number for each tech radar category.
+     * @param prompt The category name.
+     * @return The int given by the user.
      */
     public static int getValue(String prompt) {
         int choice;
@@ -225,8 +226,8 @@ public class AddEcfaRadar {
     }
 
     /**
-     * 
-     * @return
+     * Prompts the user to select a choice for Gimmicks.
+     * @return The choice converted to string given by the user.
      */
     public static String getGimmicks() {
         int choice;
@@ -257,9 +258,9 @@ public class AddEcfaRadar {
     }
 
     /**
-     * 
-     * @param myFile
-     * @param chartList
+     * Updates the file once a change has been made.
+     * @param myFile The file to be overwritten.
+     * @param chartList The list of charts given by the file.
      * @throws IOException
      */
     public static void writeToFile(File myFile, ArrayList<Chart> chartList) 
@@ -272,7 +273,8 @@ public class AddEcfaRadar {
         String nextLine;
         while ((nextLine = read.readLine()) != null) {
             if (lineCount == styleLine) {
-                content += "#CHARTSTYLE:" + chartList.get(process).toString() + ";\n";
+                content += "#CHARTSTYLE:" + 
+                           chartList.get(process).toString() + ";\n";
                 process++;
                 if (process < chartList.size()) {
                     styleLine = chartList.get(process).getPosition();
